@@ -33,7 +33,9 @@ RUN apt-get update \
     zip \
     bcmath \
   && composer config -g process-timeout 3600 \
-  && composer config -g repos.packagist composer https://packagist.org
+  && composer config -g repos.packagist composer https://packagist.org \
+	&& pecl install redis \
+    docker-php-ext-enable redis
 
 COPY ./src /var/www/html
 COPY ./docker/php/php.ini /usr/local/etc/php/php.ini
