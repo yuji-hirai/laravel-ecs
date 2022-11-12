@@ -1,7 +1,5 @@
 FROM php:8.1-fpm-bullseye
 
-WORKDIR /var/www/html
-
 # timezone environment
 ENV TZ Asia/Tokyo \
   # locale
@@ -18,20 +16,20 @@ RUN apt-get update \
   && apt-get -y install --no-install-recommends \
     locales \
     git \
-    unzip \
-    vim \
     libzip-dev \
     libicu-dev \
     libonig-dev \
+    unzip \
+    vim \
   && apt-get clean \
   && rm -rf /var/lib/apt/lists/* \
   && locale-gen ja_JP.UTF-8 \
   && localedef -f UTF-8 -i ja_JP ja_JP.UTF-8 \
   && docker-php-ext-install \
+    bcmath \
     intl \
     pdo_mysql \
     zip \
-    bcmath \
   && composer config -g process-timeout 3600 \
   && composer config -g repos.packagist composer https://packagist.org \
 	&& pecl install redis \
@@ -40,6 +38,8 @@ RUN apt-get update \
 COPY ./src /var/www/html
 COPY ./docker/php/php.ini /usr/local/etc/php/php.ini
 
+
+WORKDIR /var/www/html
 RUN composer install -q -n --no-ansi --no-dev --no-scripts --no-progress --prefer-dist \
   && chmod -R 777 storage bootstrap/cache \
   && php artisan optimize:clear \
